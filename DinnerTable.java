@@ -53,14 +53,14 @@ public class DinnerTable
 			if (k < spots[0].getNetHappiness()) {
 				swap(0, i);
 			}
-			else if (k < spots[l2].getNetHappiness()) {
-				swap(l2, i);
-			}
 			else if (k < spots[spots.length-1].getNetHappiness()) {
 				swap(spots.length-1, i);
 			}
 			else if (k < spots[l2-1].getNetHappiness()) {
 				swap(l2-1, i);
+			}
+			else if (k < spots[l2].getNetHappiness()) {
+				swap(l2, i);
 			}
 		}
 	}
@@ -70,16 +70,21 @@ public class DinnerTable
 		int score = 0;
 		for (int i = 0; i < spots.length; i++) {
 			if (i != spots.length / 2 - 1 && i != spots.length-1) {
-				// adjacent people are talking:
-				score += spots[i].talk(spots[i+1]);
 				score += spots[i].compare(spots[i+1]);
 			}
 			
+			// adjacent people are talking:
+			if (i + 1 != spots.length/2 && i + 1 != spots.length)
+				score += spots[i].talk(spots[i+1]);
+				
+			if (i - 1 != -1 && i - 1 != spots.length/2 - 1)
+				score += spots[i].talk(spots[i-1]);
+
 			int opp = (i + spots.length/2) % spots.length;
-			
 			// yes this counts opposites twice, but it's 1 point twice
 			// which satisfies the 2 points opposite rule.
 			score += spots[i].compare(spots[opp]);
+			score += spots[i].talk(spots[opp]);
 		}
 		return score;
 	}
@@ -95,7 +100,7 @@ public class DinnerTable
 		int[] layout = getLayout();
 	
 		// yes I am throwing runtime into this; gotta use my 60 secs. :)
-		for (int k = 0; k < 50000; ++k) {
+		for (int k = 0; k < 40000; ++k) {
 			for (int l = 0; l < spots.length/2; ++l) {
 				for (int i = 1; i < spots.length-2; i++)
 				{
@@ -156,7 +161,7 @@ public class DinnerTable
 		spots[b] = p;
 	}
 	
-	// returns an array of the seating order: 0 = person 0, etc.
+	// returns an array of the seating order.
 	public int[] getLayout()
 	{
 		int[] layout = new int[spots.length];
@@ -170,8 +175,8 @@ public class DinnerTable
 	public void shuffle()
 	{
 		for (int i = spots.length-2; i > 1; i--) {
-			int j = (int)Math.floor(Math.random()*i);
-			if (isCorner(i) || isCorner(j)) continue;
+			int j = (int)Math.floor(Math.random()*(i+1));
+			if (isCorner(j) || isCorner(i)) continue;
 			swap(j, i);
 		}
 	}

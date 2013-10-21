@@ -59,7 +59,7 @@ public class Personality
 	// by talking, people find out about each other.
 	public int talk(Personality other)
 	{
-		return likes[other.ID] + other.likes[ID];
+		return likes[other.ID];
 	}
 	
 	// compares this personalities gender to the other.
